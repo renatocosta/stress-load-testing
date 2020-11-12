@@ -1,0 +1,67 @@
+faustao_stresstest:
+  default_args:
+    owner: 'faustao'
+    start_date: 2020-06-04  # or '2 days'
+    end_date: 2020-12-31
+    retries: 0
+    retry_delay_sec: 300
+  # agendar para toda quarta
+  schedule_interval: '0 6 * * 3'
+  concurrency: 5
+  max_active_runs: 1
+  dagrun_timeout_sec: 3600
+  default_view: 'graph'
+  orientation: 'LR'
+  description: 'Faustão Automated Stresstest'
+  on_success_callback_name: success
+  on_success_callback_file: /opt/airflow/dags/flow-control/success.py
+  on_failure_callback_name: failure
+  on_failure_callback_file: /opt/airflow/dags/flow-control/failure.py
+  tasks:
+    warmup:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X POST http://faustao-add-consumer-master-svc:8089/swarm -d "locust_count=100000&hatch_rate=25&host=https://gateway.service.ppay.me" && sleep 600'
+    add_consumer:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X POST http://faustao-add-consumer-master-svc:8089/swarm -d "locust_count=120000&hatch_rate=1000&host=https://gateway.service.ppay.me"'
+      dependencies: [warmup]
+    wait_consumers:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'sleep 900'
+      dependencies: [add_consumer]
+    feed:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X POST http://faustao-feed-master-svc:8089/swarm -d "locust_count=100000&hatch_rate=5000&host=https://gateway.service.ppay.me"'
+      dependencies: [wait_consumers]
+    wait_feed: 
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'sleep 600'
+      dependencies: [feed]
+    promo:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X POST http://faustao-promo-master-svc:8089/swarm -d "locust_count=100000&hatch_rate=5000&host=https://gateway.service.ppay.me"'
+      dependencies: [wait_search_then_kill]
+    wait_promo: 
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'sleep 600'
+      dependencies: [promo]
+    search:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X POST http://faustao-search-master-svc:8089/swarm -d "locust_count=100000&hatch_rate=5000&host=https://gateway.service.ppay.me"'
+      dependencies: [wait_consumers]
+    wait_search_then_kill: 
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'sleep 600 && curl -X GET http://faustao-search-master-svc:8089/stop'
+      dependencies: [search]
+    stop_add_consumer:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X GET http://faustao-add-consumer-master-svc:8089/stop'
+      dependencies: [wait_consumers]
+    stop_feed:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X GET http://faustao-feed-master-svc:8089/stop'
+      dependencies: [wait_feed]
+    stop_promo:
+      operator: airflow.operators.bash_operator.BashOperator
+      bash_command: 'curl -X GET http://faustao-promo-master-svc:8089/stop'
+      dependencies: [wait_promo]

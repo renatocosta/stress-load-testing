@@ -1,0 +1,35 @@
+kind: pipeline
+name: faustao
+
+trigger:
+  event:
+    - push
+  branch:
+    - master
+
+steps:
+
+- name: publish  
+  image: plugins/ecr
+  settings:
+    repo: faustao/locust
+    registry: 289208114389.dkr.ecr.us-east-1.amazonaws.com
+    region: us-east-1
+    tags: 
+      - 1.2.2
+
+
+- name: trigger  
+  image: plugins/downstream
+  settings:
+    server: https://drone.ppay.me
+    token:
+      from_secret: drone_token
+    fork: true
+    repositories:
+      - PicPay/faustao-framework
+  when:
+    event:
+      - push
+    branch:
+      - master

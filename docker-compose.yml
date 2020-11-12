@@ -1,0 +1,94 @@
+version: '3'
+services:
+    master:
+      image: 289208114389.dkr.ecr.us-east-1.amazonaws.com/faustao/locust:1.2.2
+      build: .
+      environment:
+        - "LOCUST_MODE=master"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/site.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/add-consumer.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/identify_contacts.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/credit-card.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/change_password.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/bills.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/dg.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/feed.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/p2p.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/pav.py"
+        - "LOCUST_SCRIPT=/locustfiles/tasks/search.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/gateway.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/coupon.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/card-registration.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/pocjdk14.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/cashout_banco24_horas.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/student-account.py"
+        - "LOCUST_OPTS=--csv=/tmp/lt --headless --print-stats -u 5 -r 1 --run-time 60s"
+      env_file:
+        - ./.env
+      volumes:
+        - ./stresstest/locustfiles:/locustfiles/
+      networks:
+        locust-nw:
+      ports:
+        - "8089:8089"
+      links:
+        - db.locust.local
+
+    slave:
+      image: 289208114389.dkr.ecr.us-east-1.amazonaws.com/faustao/locust:1.2.2
+      build: .
+      environment:
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/pav.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/credit-card.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/add-consumer.py"
+        # - "LOCUST_SCRIPT=/locustfiles/tasks/feed.py"
+        - "LOCUST_SCRIPT=/locustfiles/tasks/search.py"
+        - "LOCUST_MODE=worker"
+        - "LOCUST_MASTER_HOST=master"
+        - "LOCUST_MASTER_BIND_PORT=5557"
+        - "LOCUST_OPTS=--headless --worker --master-host=master"
+      env_file:
+        - ./.env
+      volumes:
+        - ./stresstest/locustfiles:/locustfiles/
+      networks:
+        locust-nw:
+      ports:
+        - "8089"
+      links:
+        - db.locust.local
+        - master
+      depends_on:
+        - master
+
+    db.locust.local:
+      image: mysql:5.6
+      command: --default-authentication-plugin=mysql_native_password
+      restart: always
+      volumes:
+        - locust_db56:/var/lib/mysql
+      env_file:
+        - ./.env
+      networks:
+        locust-nw:
+      ports:
+        - "3309:3306"
+
+    flyway:
+      restart: "no"
+      image: boxfuse/flyway:5.2.4-alpine
+      command: -connectRetries=60 migrate
+      volumes:
+        - ./db/sql:/flyway/sql
+      env_file:
+        - ./.env
+      depends_on:
+        - db.locust.local
+      networks:
+        locust-nw:
+
+networks:
+    locust-nw:
+
+volumes:
+  locust_db56:

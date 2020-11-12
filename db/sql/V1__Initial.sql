@@ -1,0 +1,81 @@
+CREATE TABLE `consumers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `password` varchar(50) NOT NULL,
+  `error` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `stats` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `scenery` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `requests` varchar(50) NOT NULL,
+  `failures` varchar(50) NOT NULL,
+  `median_response_time` varchar(50) NOT NULL,
+  `average_response_time` varchar(50) NOT NULL,
+  `min_response_time` varchar(50) NOT NULL,
+  `max_response_time` varchar(50) NOT NULL,
+  `average_content_size` varchar(50) NOT NULL,
+  `requests_per_second` varchar(50) NOT NULL,
+  `requests_failed_per_second` varchar(50) NOT NULL,
+  `50_percent` varchar(50) NOT NULL,
+  `66_percent` varchar(50) NOT NULL,
+  `75_percent` varchar(50) NOT NULL,
+  `80_percent` varchar(50) NOT NULL,
+  `90_percent` varchar(50) NOT NULL,
+  `95_percent` varchar(50) NOT NULL,
+  `98_percent` varchar(50) NOT NULL,
+  `99_percent` varchar(50) NOT NULL,
+  `999_percent` varchar(50) NOT NULL,
+  `9999_percent` varchar(50) NOT NULL,
+  `99999_percent` varchar(50) NOT NULL,
+  `100_percent` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `stats_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `scenery` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(50) NOT NULL,
+  `name` varchar(50) NOT NULL,
+  `timestamp` varchar(50) NOT NULL,
+  `requests` varchar(50) NOT NULL,
+  `failures` varchar(50) NOT NULL,
+  `requests_per_second` varchar(50) NOT NULL,
+  `requests_failed_per_second` varchar(50) NOT NULL,
+  `median_response_time` varchar(50) NOT NULL,
+  `average_response_time` varchar(50) NOT NULL,
+  `min_response_time` varchar(50) NOT NULL,
+  `max_response_time` varchar(50) NOT NULL,
+  `average_content_size` varchar(50) NOT NULL,
+  `50_percent` varchar(50) NOT NULL,
+  `66_percent` varchar(50) NOT NULL,
+  `75_percent` varchar(50) NOT NULL,
+  `80_percent` varchar(50) NOT NULL,
+  `90_percent` varchar(50) NOT NULL,
+  `95_percent` varchar(50) NOT NULL,
+  `98_percent` varchar(50) NOT NULL,
+  `99_percent` varchar(50) NOT NULL,
+  `999_percent` varchar(50) NOT NULL,
+  `9999_percent` varchar(50) NOT NULL,
+  `99999_percent` varchar(50) NOT NULL,
+  `100_percent` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `stats_failure` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `scenery` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(10) NOT NULL,
+  `exception` varchar(100) NOT NULL,
+  `count` integer NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
