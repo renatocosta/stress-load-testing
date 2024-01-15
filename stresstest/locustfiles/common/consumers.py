@@ -32,7 +32,7 @@ def prepare_headers():
 
     device_os = ['android', 'ios']
     app_version = ['10.19.29', '10.19.29']
-    device_id = os.environ['PICPAY_LOADTEST_PREFIX'] + fake.uuid4()
+    device_id = os.environ['testing_LOADTEST_PREFIX'] + fake.uuid4()
     device_id = device_id[:36]
 
     headers = {

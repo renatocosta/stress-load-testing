@@ -8,7 +8,7 @@ import sys
 
 def notify_start_test(scenery="add-consumer"):
     # Só envia mensagem e reports em prod
-    # if "appgw.picpay.com" not in os.environ["TARGET_HOST"]:
+    # if "appgw.testing.com" not in os.environ["TARGET_HOST"]:
     #     return False
     if not isinstance(runners.Runner, runners.MasterRunner):
         return False

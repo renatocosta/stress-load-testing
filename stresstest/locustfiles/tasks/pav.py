@@ -6,7 +6,7 @@ from locust import HttpUser, SequentialTaskSet, events, task, between
 
 from common.consumers import get_consumer_credit_card_id
 from common.reports import save_stats, save_stats_history, save_stats_failure, notify_start_test
-from common.picpay_requests import picpay_legacy_api
+from common.testing_requests import testing_legacy_api
 from common.sellers import SELLERS
 from tasks.general_behaviour import GeneralTaskSet
 import sys
@@ -47,14 +47,14 @@ class PavTaskSet(SequentialTaskSet):
             "profile_type": "seller"
         })
 
-        return picpay_legacy_api(self, '/api/getProfile.json', self.headers, payload)
+        return testing_legacy_api(self, '/api/getProfile.json', self.headers, payload)
 
     def get_item_by_store(self, seller_id):
         payload = json.dumps({
             "seller_id": seller_id
         })
 
-        return picpay_legacy_api(self, '/api/itemByStoreId.json', self.headers, payload)
+        return testing_legacy_api(self, '/api/itemByStoreId.json', self.headers, payload)
 
     def create_transaction(self, password, seller_id, credit_card_id, amount, item_id):
         payload = {
@@ -79,14 +79,14 @@ class PavTaskSet(SequentialTaskSet):
 
         payload = json.dumps(payload)
 
-        return picpay_legacy_api(self, '/api/createTransaction.json', self.headers, payload)
+        return testing_legacy_api(self, '/api/createTransaction.json', self.headers, payload)
 
     def ack_transaction(self, transaction_id):
         payload = json.dumps({
             "transaction_id": transaction_id
         })
 
-        return picpay_legacy_api(self, '/api/ackTransaction.json', self.headers, payload)
+        return testing_legacy_api(self, '/api/ackTransaction.json', self.headers, payload)
 
 
 class PavTest(HttpUser):

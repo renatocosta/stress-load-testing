@@ -5,7 +5,7 @@ from random import randint, choice
 from locust import HttpUser, SequentialTaskSet, task, events, between
 
 from common.consumers import get_consumer_credit_card_id
-from common.picpay_requests import picpay_legacy_api
+from common.testing_requests import testing_legacy_api
 from tasks.general_behaviour import GeneralTaskSet
 from common.reports import save_stats, save_stats_history, save_stats_failure, notify_start_test
 
@@ -125,14 +125,14 @@ class DGTaskSet(SequentialTaskSet):
 
         payload = json.dumps(payload)
 
-        return picpay_legacy_api(self, '/api/createTransaction.json', self.headers, payload, name='buying ' + digital_good)
+        return testing_legacy_api(self, '/api/createTransaction.json', self.headers, payload, name='buying ' + digital_good)
 
     def ack_transaction(self, transaction_id):
         payload = json.dumps({
             'transaction_id': transaction_id
         })
 
-        return picpay_legacy_api(self, '/api/ackTransaction.json', self.headers, payload)
+        return testing_legacy_api(self, '/api/ackTransaction.json', self.headers, payload)
 
 
 class DGTest(HttpUser):

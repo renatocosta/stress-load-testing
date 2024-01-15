@@ -3,7 +3,7 @@ import random
 from common.consumers import prepare_headers
 
 
-def picpay_legacy_api(task_set, endpoint, headers, payload, name=None):
+def testing_legacy_api(task_set, endpoint, headers, payload, name=None):
 
     if name is None:
         name = endpoint

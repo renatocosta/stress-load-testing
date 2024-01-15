@@ -107,7 +107,7 @@ class UserBehavior(SequentialTaskSet):
     @task(1)
     def validate_email(self):
         data = {
-            "email": 'customer_load_test_' + str(random.randint(1, 10000)) + '@picpay.test'
+            "email": 'customer_load_test_' + str(random.randint(1, 10000)) + '@testing.test'
         }
 
         with self.client.post("/api/isValidEmail.json", data=json.dumps(data), headers=self.headers, name="Validate email", catch_response=True) as response:
@@ -144,7 +144,7 @@ class UserBehavior(SequentialTaskSet):
     def add_consumer(self):
         data = {
             "name": "Load Test " + self.fake.name(),
-            "email": 'customer_load_test_' + str(random.randint(1, MAX_USERS)) + '@picpay.test',
+            "email": 'customer_load_test_' + str(random.randint(1, MAX_USERS)) + '@testing.test',
             "pass": "1234",
             "cpf": "99988877766",
             "birth_date": self.fake.date("%d/%m/%Y", datetime.date(2000, 12, 31)),
@@ -211,7 +211,7 @@ class UserBehavior(SequentialTaskSet):
     @task(1)
     def add_promo_coupon(self):
         data = {
-            "referral_code": os.environ["PICPAY_PROMO_COUPON"]
+            "referral_code": os.environ["testing_PROMO_COUPON"]
         }
 
         with self.client.post("/api/validateReferralCode.json", data=json.dumps(data), headers=self.headers, name="Add Promo Coupon", catch_response=True) as response:

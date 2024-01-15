@@ -40,7 +40,7 @@ class CouponBehaviour(SequentialTaskSet):
     def addPromoCoupon(self):
 
         data = {
-            "referral_code": os.environ["PICPAY_PROMO_COUPON"]
+            "referral_code": os.environ["testing_PROMO_COUPON"]
         }
 
         with  self.client.post("/api/validateReferralCode.json", data=json.dumps(data), headers=self.headers, name = "add Promo Coupon", catch_response=True)  as response:

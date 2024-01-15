@@ -2,7 +2,7 @@ import json
 import os
 from locust import SequentialTaskSet, task, HttpUser, between
 
-from common.picpay_requests import get_headers, picpay_legacy_api
+from common.testing_requests import get_headers, testing_legacy_api
 from common.auth import set_consumer_credentials
 
 
@@ -19,7 +19,7 @@ class GeneralTaskSet(SequentialTaskSet):
 
         headers = {'token': os.environ['TOKEN']}
         data = json.dumps({})
-        consumer_data = picpay_legacy_api(self, '/api/getAllConsumerData.json', headers, data)
+        consumer_data = testing_legacy_api(self, '/api/getAllConsumerData.json', headers, data)
         os.environ['CONSUMER_DATA'] = json.dumps(consumer_data)
 
     @task(2)
@@ -58,7 +58,7 @@ class GeneralTaskSet(SequentialTaskSet):
 
         headers = {'token': os.environ['TOKEN']}
         data = json.dumps({})
-        picpay_legacy_api(self, '/api/getGlobalCredit.json', headers, data)
+        testing_legacy_api(self, '/api/getGlobalCredit.json', headers, data)
 
     @task(2)
     def get_feed(self):
@@ -70,7 +70,7 @@ class GeneralTaskSet(SequentialTaskSet):
         data = json.dumps({'visibility': '3'})
 
         #all feeds
-        response = picpay_legacy_api(self, '/api/getFeed.json', headers, data)
+        response = testing_legacy_api(self, '/api/getFeed.json', headers, data)
         feed_list = False
         if response is not None:
             feed_list = response['data']['feed']
@@ -78,15 +78,15 @@ class GeneralTaskSet(SequentialTaskSet):
         if feed_list:
             last_id = feed_list[-1]['Data']
             data = json.dumps({'visibility': '3', 'start_id': last_id})
-            picpay_legacy_api(self, '/api/getFeed.json', headers, data, name='roll feed')
+            testing_legacy_api(self, '/api/getFeed.json', headers, data, name='roll feed')
 
             # # get comment
             # data = json.dumps({'feed_common_data_id': last_id})
-            # picpay_legacy_api(self, 'api/getFeedComments.json', headers, data, name='get feed comments')
+            # testing_legacy_api(self, 'api/getFeedComments.json', headers, data, name='get feed comments')
 
         #only me feeds
         data = json.dumps({'visibility': '1'})
-        picpay_legacy_api(self, '/api/getFeed.json', headers, data, name='feed only me')
+        testing_legacy_api(self, '/api/getFeed.json', headers, data, name='feed only me')
 
     @task(1)
     def get_payment_methods(self):
@@ -96,7 +96,7 @@ class GeneralTaskSet(SequentialTaskSet):
 
         headers = {'token': os.environ['TOKEN']}
         data = json.dumps({})
-        payment_methods = picpay_legacy_api(self, '/api/getPaymentMethods.json', headers, data)
+        payment_methods = testing_legacy_api(self, '/api/getPaymentMethods.json', headers, data)
         os.environ['PAYMENT_METHODS'] = json.dumps(payment_methods)
 
     @task(1)
